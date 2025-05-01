@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  order-service:
+    build: ./services/order-service
+    depends_on:
+      - rabbitmq
+    volumes:
+      - ./services/order-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "3001:3000"
+
+  inventory-service:
+    build: ./services/inventory-service
+    depends_on: 
+      - rabbitmq
+    volumes:
+      - ./services/inventory-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "3002:3000"
+
+  payment-service:
+    build: ./services/payment-service
+    depends_on: 
+      - rabbitmq
+    volumes:
+      - ./services/payment-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "3003:3000"
+
+  shipping-service:
+    build: ./services/shipping-service
+    depends_on: 
+      - rabbitmq
+    volumes:
+      - ./services/shipping-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "3004:3000"
+
+  notification-service:
+    build: ./services/notification-service
+    depends_on: 
+      - rabbitmq
+    volumes:
+      - ./services/notification-service:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "3005:3000"
+
+volumes:
+  order-service:
+  # inventory-service:
+  # payment-service:
+  # shipping-service:
+  # notification-service:
+  # rabbitmq:
+    # driver: local
+    # driver_opts:
+    #   type: none
+    #   device: /var/lib/rabbitmq
+    #   o: bind
